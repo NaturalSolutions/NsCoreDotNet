@@ -1,0 +1,10 @@
+
+*.log
+
+
+
+CommonDynPropInterface/bin
+CommonDynPropInterface/obj
+
+CommonDynPropManager/bin
+CommonDynPropManager/obj
