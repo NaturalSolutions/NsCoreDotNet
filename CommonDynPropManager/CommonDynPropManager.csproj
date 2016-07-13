@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CommonDynPropManager</RootNamespace>
     <AssemblyName>CommonDynPropManager</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,11 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\EcollectionEntomo\Ecollection\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\EcollectionEntomo\Ecollection\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\EcollectionEntomo\Ecollection\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\EcollectionEntomo\Ecollection\packages\Newtonsoft.Json.6.0.7\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,15 +55,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DynPropList.cs" />
+    <Compile Include="CommonObjectWithDynProp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatusManagercs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EcollectionEntomo\Ecollection\Module\ConfManager\NSConfManager.csproj">
+      <Project>{f30d516b-79c4-48e9-88dd-8456659b6b2b}</Project>
+      <Name>NSConfManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EcollectionEntomo\Ecollection\Module\NS.Logs\APIDotNetLog\NS.Logs.csproj">
+      <Project>{374b9043-4418-4611-8825-5f2a3d6dde68}</Project>
+      <Name>NS.Logs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommonDynPropInterface\CommonDynPropInterface.csproj">
       <Project>{92e0c74b-35ab-4ade-9b46-ffbf1588d77d}</Project>
       <Name>CommonDynPropInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

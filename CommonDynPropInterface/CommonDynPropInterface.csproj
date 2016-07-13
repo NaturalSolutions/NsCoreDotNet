@@ -48,6 +48,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EcollectionEntomo\Ecollection\Module\ConfManager\NSConfManager.csproj">
+      <Project>{f30d516b-79c4-48e9-88dd-8456659b6b2b}</Project>
+      <Name>NSConfManager</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
