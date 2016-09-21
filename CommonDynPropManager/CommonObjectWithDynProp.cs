@@ -514,7 +514,7 @@ namespace CommonDynPropManager
                         {
                             // Pour l'instant gestion des dest string uniquement
 
-                            requete = "select ValueString from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
+							requete = "select ValueString from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.ID = V." + typeDynProp.LinkedTable + "DynProp_ID AND p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
                             requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
                             DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[4] { "@id", sourceIdValeur, "@StartDate", this.OccurenceDate });
                             if (Retour.Rows.Count >= 1)
@@ -525,7 +525,7 @@ namespace CommonDynPropManager
                                 }
                                 else
                                 {
-                                    requete = "UPDATE V SET ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' " ;
+									requete = "UPDATE V SET ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.ID = V." + typeDynProp.LinkedTable + "DynProp_ID AND p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
                                     requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
                                     object[] Params = new object[6] { "@val", valeur, "@id", sourceIdValeur, "@StartDate", this.OccurenceDate };
                                     MyConn.ExecuteQueryWithArgs(requete, Params);
