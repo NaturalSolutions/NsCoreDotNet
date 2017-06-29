@@ -88,8 +88,6 @@ namespace CommonDynPropManager
         public abstract void LoadNowValues();
 
 
-        public abstract DateTime OccurenceDate { get; }
-
         /// <summary>
         /// Get ValuesNow for existing DynPropList
         /// </summary>
@@ -478,9 +476,8 @@ namespace CommonDynPropManager
             foreach (IGenType_DynProp typeDynProp in MyLinkedDynProp)
             {
                 var valeur = this[typeDynProp.DynProp.Name];
-                if (valeur.GetType().Name.Substring(0, 4).ToLower() == "list")
+                if (valeur != null && valeur.GetType().Name.Substring(0, 4).ToLower() == "list")
                 {
-                    //valeur =
                     valeur = JsonConvert.SerializeObject(valeur);
                 }
                 string sourceId = typeDynProp.LinkSourceID;
@@ -510,13 +507,13 @@ namespace CommonDynPropManager
                 {
                     if (valeur != null && !String.IsNullOrEmpty(valeur.ToString()))
                     {
-                        if (typeDynProp.LinkedField.Substring(0, 5) == "@Dyn:")
+                        if (typeDynProp.LinkedField.Length >= 5 && typeDynProp.LinkedField.Substring(0, 5) == "@Dyn:")
                         {
                             // Pour l'instant gestion des dest string uniquement
 
                             requete = "select ValueString from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
                             requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
-                            DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[4] { "@id", sourceIdValeur, "@StartDate", this.OccurenceDate });
+                            DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[3] { "@id", sourceIdValeur, "@StartDate"});
                             if (Retour.Rows.Count >= 1)
                             { // Il existe une valeur à la même date
                                 if (Retour.Rows[0][0].ToString() == valeur.ToString())
@@ -527,7 +524,7 @@ namespace CommonDynPropManager
                                 {
                                     requete = "UPDATE V SET ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' " ;
                                     requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
-                                    object[] Params = new object[6] { "@val", valeur, "@id", sourceIdValeur, "@StartDate", this.OccurenceDate };
+                                    object[] Params = new object[5] { "@val", valeur, "@id", sourceIdValeur, "@StartDate" };
                                     MyConn.ExecuteQueryWithArgs(requete, Params);
 
                                 }
@@ -538,7 +535,7 @@ namespace CommonDynPropManager
                                 requete += "," + typeDynProp.LinkedTable + "DynProp_ID)";
                                 requete += " select @StartDate,@val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
                                 requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
-                                object[] Params = new object[6] { "@val", valeur, "@id", sourceIdValeur, "@StartDate", this.OccurenceDate };
+                                object[] Params = new object[5] { "@val", valeur, "@id", sourceIdValeur, "@StartDate"};
                                 MyConn.ExecuteQueryWithArgs(requete, Params);
                             }
                         }

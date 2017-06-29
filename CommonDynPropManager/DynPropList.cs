@@ -98,7 +98,8 @@ namespace CommonDynPropManager
                     MaDynProp.ValueFloat = decimal.Parse(MaValeur.ToString());
                     break;
                 case "string":
-                    MaDynProp.ValueString = (string) MaValeur;
+
+                    MaDynProp.ValueString = MaValeur.ToString();
                     break;
                 case "list":
                     // TODO enlver les caractères en trop

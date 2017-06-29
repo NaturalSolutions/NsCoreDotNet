@@ -7,13 +7,13 @@ namespace CommonDynPropInterface
 {
     public enum Status
     {
-        ToBeValidated = 2,
-        Validated = 4,
-        Archived = 8,
-        Deleted = 16,
-        Sent = 32,
-        Consumed = 64,
-        Outside = 128
+        Pending = 1,
+        Validated = 2,
+        Scrapped = 4,
+        Consummed = 8,
+        Sent = 16,
+        StoredExternally = 32,
+        Exit = 64
     }
 
 
