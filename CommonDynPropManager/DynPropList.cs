@@ -37,7 +37,7 @@ namespace CommonDynPropManager
         {
             switch (MyValue.DynProp.TypeProp.ToLower())
             {
-                case "entier":
+                case "int":
                     return MyValue.ValueInt;
                 case "date":
                     if (isForDTO)
@@ -89,6 +89,9 @@ namespace CommonDynPropManager
             switch (TypeValue.ToLower())
             {
                 case "entier":
+                    MaDynProp.ValueInt = long.Parse(MaValeur.ToString());
+                    break;
+                case "int":
                     MaDynProp.ValueInt = long.Parse(MaValeur.ToString());
                     break;
                 case "date":

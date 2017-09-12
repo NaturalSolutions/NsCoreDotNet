@@ -287,11 +287,12 @@ namespace CommonDynPropManager
             object Mavaleur;
 
             // Get list of static properties
-            PropertyInfo[] MyProps = this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+            // REMOVED FLAGS : PropertyInfo[] MyProps = this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo[] MyProps = this.GetType().GetProperties();
 
             for (int i = 0; i < MyProps.Length; i++)
             {
-                if (!MyProps[i].PropertyType.FullName.Contains("ICollection"))// Only if not a collection
+                if (MyProps[i].Name.ToLower() != "item" && !MyProps[i].PropertyType.FullName.Contains("ICollection"))// Only if not a collection
                 {
                     if (!MyProps[i].PropertyType.FullName.Contains("ECollection"))// if standard type
                     {
@@ -313,7 +314,7 @@ namespace CommonDynPropManager
                                 else
                                 {
 
-                                    Mavaleur = ((DateTime)Mavaleur).ToString("dd/MM/yyyy HH:mm:ss");
+                                    Mavaleur = ((DateTime)Mavaleur).ToString("dd/MM/yyyy");
                                 }
                             }
                             Resultat.Add(MyProps[i].Name.ToLower(), Mavaleur);
@@ -502,6 +503,7 @@ namespace CommonDynPropManager
                     sourceIdValeur = this[sourceId.Substring(3)];
                 }
                 
+
                 string requete;
                 if (allowedTables.Contains(typeDynProp.LinkedTable, StringComparer.CurrentCultureIgnoreCase))
                 {
@@ -511,9 +513,11 @@ namespace CommonDynPropManager
                         {
                             // Pour l'instant gestion des dest string uniquement
 
-                            requete = "select ValueString from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
-                            requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
-                            DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[3] { "@id", sourceIdValeur, "@StartDate"});
+                            requete = "select ValueString from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable +
+                                "DynProps P ON V." + typeDynProp.LinkedTable + "DynProp_ID = P.ID ";
+                            requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id ";
+                            requete += "AND P.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
+                            DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[2] { "@id", sourceIdValeur});
                             if (Retour.Rows.Count >= 1)
                             { // Il existe une valeur à la même date
                                 if (Retour.Rows[0][0].ToString() == valeur.ToString())
@@ -522,26 +526,29 @@ namespace CommonDynPropManager
                                 }
                                 else
                                 {
-                                    requete = "UPDATE V SET ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' " ;
-                                    requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
-                                    object[] Params = new object[5] { "@val", valeur, "@id", sourceIdValeur, "@StartDate" };
+                                    requete = "UPDATE V SET ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable +
+                                        "DynProps P ON V." + typeDynProp.LinkedTable + "DynProp_ID = P.ID ";
+                                    requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id ";
+                                    requete += "AND P.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                    object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                     MyConn.ExecuteQueryWithArgs(requete, Params);
 
                                 }
                             }
                             else
                             {
-                                requete = "INSERT INTO " + typeDynProp.LinkedTable + "DynPropValues  ( StartDate,[ValueString]," + typeDynProp.LinkedTable + "_ID";
+                                requete = "INSERT INTO " + typeDynProp.LinkedTable + "DynPropValues  ( GETDATE(),[ValueString]," + typeDynProp.LinkedTable + "_ID";
                                 requete += "," + typeDynProp.LinkedTable + "DynProp_ID)";
-                                requete += " select @StartDate,@val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                requete += " select @val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
                                 requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
-                                object[] Params = new object[5] { "@val", valeur, "@id", sourceIdValeur, "@StartDate"};
+                                object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                 MyConn.ExecuteQueryWithArgs(requete, Params);
                             }
                         }
                         else
                         {
-                            requete = "UPDATE " + typeDynProp.LinkedTable + " SET " + typeDynProp.LinkedField + " = @val where " + typeDynProp.LinkedID + " = @id";
+                            // TODO : TMP, UGLY, SHOULD FIND A WAY THROUGH THE CONF
+                            requete = "UPDATE " + typeDynProp.LinkedTable + (typeDynProp.LinkedTable == "Sample" ? "s" : "" ) + " SET " + typeDynProp.LinkedField + " = @val where " + typeDynProp.LinkedID + " = @id";
                             //LogManager.ZeLogger.SendNotice(LogDomaine.WebApplication, requete);
                             //LogManager.ZeLogger.SendNotice(LogDomaine.WebApplication, ObjContext.Database.Connection.ConnectionString);
                             object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur };
