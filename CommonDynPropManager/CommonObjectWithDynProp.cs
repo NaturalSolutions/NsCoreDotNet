@@ -398,7 +398,6 @@ namespace CommonDynPropManager
                                 {
                                     try
                                     {
-
                                         MyParsedData = DateTime.ParseExact(MyData[DataKey].ToString().Replace(" ", " "), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                                     }
                                     catch
@@ -537,9 +536,15 @@ namespace CommonDynPropManager
                             }
                             else
                             {
+                                /* OLD, MAYBE BAD ? 
                                 requete = "INSERT INTO " + typeDynProp.LinkedTable + "DynPropValues  ( GETDATE(),[ValueString]," + typeDynProp.LinkedTable + "_ID";
                                 requete += "," + typeDynProp.LinkedTable + "DynProp_ID)";
                                 requete += " select @val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
+                                */
+                                requete = "INSERT INTO " + typeDynProp.LinkedTable + "DynPropValues  ( StartDate,[ValueString]," + typeDynProp.LinkedTable + "_ID";
+                                requete += "," + typeDynProp.LinkedTable + "DynProp_ID)";
+                                requete += " select GETDATE(),@val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
                                 requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
                                 object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                 MyConn.ExecuteQueryWithArgs(requete, Params);

@@ -70,6 +70,9 @@ namespace CommonDynPropManager
                     case Status.Exit:
                         _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Exit" }, { "FR", "Sorti" } });
                         break;
+                    case Status.Deleted:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Deleted" }, { "FR", "Supprimé" } });
+                        break;
                     default:
                         _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", MonStatus.ToString() } });
                         break;
@@ -89,8 +92,5 @@ namespace CommonDynPropManager
             return StatusNames[MonStatus][Language];
 
         }
-
-
-
     }
 }

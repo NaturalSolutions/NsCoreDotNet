@@ -48,8 +48,8 @@ namespace CommonDynPropManager
                         }
                         else
                         {
-
-                            return ((DateTime) MyValue.ValueDate).ToString("dd/MM/yyyy HH:mm:ss");
+                            //updated from dd/MM/yyyy HH:mm:ss
+                            return ((DateTime) MyValue.ValueDate).ToString("dd/MM/yyyy");
                         }
                     }
                     else

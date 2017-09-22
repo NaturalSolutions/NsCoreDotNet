@@ -13,7 +13,8 @@ namespace CommonDynPropInterface
         Consummed = 8,
         Sent = 16,
         StoredExternally = 32,
-        Exit = 64
+        Exit = 64,
+        Deleted = 1024
     }
 
 
