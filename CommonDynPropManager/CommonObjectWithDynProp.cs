@@ -317,7 +317,13 @@ namespace CommonDynPropManager
                                     Mavaleur = ((DateTime)Mavaleur).ToString("dd/MM/yyyy");
                                 }
                             }
-                            Resultat.Add(MyProps[i].Name.ToLower(), Mavaleur);
+                            if (Resultat.Keys.Contains(MyProps[i].Name.ToLower()))
+                            {
+                                if (Resultat[MyProps[i].Name.ToLower()] == null)
+                                    Resultat[MyProps[i].Name.ToLower()] = Mavaleur;
+                            }
+                            else
+                                Resultat.Add(MyProps[i].Name.ToLower(), Mavaleur);
                         }
 
                     }
@@ -333,10 +339,7 @@ namespace CommonDynPropManager
                         else
                         {
                             this.AddDTOInList(MyProps[i].Name, Resultat);
-
                         }
-
-
                     }
 
                 }
@@ -344,11 +347,6 @@ namespace CommonDynPropManager
             return Resultat;
 
         }
-
-
-
-
-
 
         /// <summary>
         /// Gives an empty dictionnaray constaining one entry for each dynamic property associated to the ObjType of current objet
