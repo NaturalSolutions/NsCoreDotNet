@@ -10,7 +10,7 @@ namespace CommonDynPropInterface
         Pending = 1,
         Validated = 2,
         Scrapped = 4,
-        Consummed = 8,
+        Consumed = 8,
         Sent = 16,
         StoredExternally = 32,
         Exit = 64,

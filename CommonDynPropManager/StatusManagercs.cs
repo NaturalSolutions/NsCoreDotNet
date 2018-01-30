@@ -58,8 +58,8 @@ namespace CommonDynPropManager
                     case Status.Scrapped:
                         _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Scrapped" }, { "FR", "Détruit" } });
                         break;
-                    case Status.Consummed:
-                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Consummed" }, { "FR", "Consommé" } });
+                    case Status.Consumed:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Consumed" }, { "FR", "Consommé" } });
                         break;
                     case Status.Sent:
                         _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Sent" }, { "FR", "Envoyé" } });

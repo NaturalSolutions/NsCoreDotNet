@@ -519,11 +519,11 @@ namespace CommonDynPropManager
                             { // Il existe une valeur à la même date
                                 if (Retour.Rows[0][0].ToString() == valeur.ToString())
                                 {
-                                    // Même date, même valeur, on ne fait rien
+                                    // même valeur, on ne fait rien
                                 }
                                 else
                                 {
-                                    requete = "UPDATE V SET ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable +
+                                    requete = "UPDATE V SET StartDate = GETDATE(), ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable +
                                         "DynProps P ON V." + typeDynProp.LinkedTable + "DynProp_ID = P.ID ";
                                     requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id ";
                                     requete += "AND P.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
@@ -540,9 +540,14 @@ namespace CommonDynPropManager
                                 requete += " select @val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
                                 requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
                                 */
+
                                 requete = "INSERT INTO " + typeDynProp.LinkedTable + "DynPropValues  ( StartDate,[ValueString]," + typeDynProp.LinkedTable + "_ID";
                                 requete += "," + typeDynProp.LinkedTable + "DynProp_ID)";
                                 requete += " select GETDATE(),@val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                if (typeDynProp.LinkedField.Substring(5).ToLower() == "container")
+                                {
+                                    Console.WriteLine("yo !");
+                                }
                                 requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
                                 object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                 MyConn.ExecuteQueryWithArgs(requete, Params);

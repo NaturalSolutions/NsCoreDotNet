@@ -62,7 +62,14 @@ namespace CommonDynPropManager
                 case "string":
                     return MyValue.ValueString;
                 case "list":
-                    return JsonConvert.DeserializeObject<List<object>>(MyValue.ValueString);
+                    try
+                    {
+                        return JsonConvert.DeserializeObject<List<object>>(MyValue.ValueString);
+                    }
+                    catch
+                    {
+                        return MyValue.ValueString;
+                    }
                 default:
                     return MyValue.ValueString;
             }
