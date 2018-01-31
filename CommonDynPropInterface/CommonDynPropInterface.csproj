@@ -49,7 +49,7 @@
     <Compile Include="Status.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EcollectionEntomo\Ecollection\Module\ConfManager\NSConfManager.csproj">
+    <ProjectReference Include="..\..\ecollection\Module\ConfManager\NSConfManager.csproj">
       <Project>{f30d516b-79c4-48e9-88dd-8456659b6b2b}</Project>
       <Name>NSConfManager</Name>
     </ProjectReference>

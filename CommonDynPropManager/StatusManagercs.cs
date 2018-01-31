@@ -49,14 +49,29 @@ namespace CommonDynPropManager
 
                 switch (MonStatus)
                 {
-                    case Status.ToBeValidated:
-                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Pending" } });
+                    case Status.Pending:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Pending" }, { "FR", "En attente de validation" } });
+                        break;
+                    case Status.Validated:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Validated" }, { "FR", "Validé" } });
+                        break;
+                    case Status.Scrapped:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Scrapped" }, { "FR", "Détruit" } });
+                        break;
+                    case Status.Consumed:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Consumed" }, { "FR", "Consommé" } });
+                        break;
+                    case Status.Sent:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Sent" }, { "FR", "Envoyé" } });
+                        break;
+                    case Status.StoredExternally:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "StoredExternally" }, { "FR", "Stocké à l'extérieur" } });
+                        break;
+                    case Status.Exit:
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Exit" }, { "FR", "Sorti" } });
                         break;
                     case Status.Deleted:
-                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Scrapped" } });
-                        break;
-                    case Status.Outside:
-                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Stored externally" } });
+                        _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", "Deleted" }, { "FR", "Supprimé" } });
                         break;
                     default:
                         _StatusNames.Add(MonStatus, new Dictionary<string, string>() { { "EN", MonStatus.ToString() } });
@@ -77,8 +92,5 @@ namespace CommonDynPropManager
             return StatusNames[MonStatus][Language];
 
         }
-
-
-
     }
 }

@@ -37,7 +37,7 @@ namespace CommonDynPropManager
         {
             switch (MyValue.DynProp.TypeProp.ToLower())
             {
-                case "entier":
+                case "int":
                     return MyValue.ValueInt;
                 case "date":
                     if (isForDTO)
@@ -48,8 +48,8 @@ namespace CommonDynPropManager
                         }
                         else
                         {
-
-                            return ((DateTime) MyValue.ValueDate).ToString("dd/MM/yyyy HH:mm:ss");
+                            //updated from dd/MM/yyyy HH:mm:ss
+                            return ((DateTime) MyValue.ValueDate).ToString("dd/MM/yyyy");
                         }
                     }
                     else
@@ -62,7 +62,14 @@ namespace CommonDynPropManager
                 case "string":
                     return MyValue.ValueString;
                 case "list":
-                    return JsonConvert.DeserializeObject<List<object>>(MyValue.ValueString);
+                    try
+                    {
+                        return JsonConvert.DeserializeObject<List<object>>(MyValue.ValueString);
+                    }
+                    catch
+                    {
+                        return MyValue.ValueString;
+                    }
                 default:
                     return MyValue.ValueString;
             }
@@ -91,6 +98,9 @@ namespace CommonDynPropManager
                 case "entier":
                     MaDynProp.ValueInt = long.Parse(MaValeur.ToString());
                     break;
+                case "int":
+                    MaDynProp.ValueInt = long.Parse(MaValeur.ToString());
+                    break;
                 case "date":
                     MaDynProp.ValueDate = DateTime.Parse(MaValeur.ToString());
                     break;
@@ -98,7 +108,8 @@ namespace CommonDynPropManager
                     MaDynProp.ValueFloat = decimal.Parse(MaValeur.ToString());
                     break;
                 case "string":
-                    MaDynProp.ValueString = (string) MaValeur;
+
+                    MaDynProp.ValueString = MaValeur.ToString();
                     break;
                 case "list":
                     // TODO enlver les caractères en trop

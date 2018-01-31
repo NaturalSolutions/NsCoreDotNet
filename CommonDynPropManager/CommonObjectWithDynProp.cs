@@ -88,8 +88,6 @@ namespace CommonDynPropManager
         public abstract void LoadNowValues();
 
 
-        public abstract DateTime OccurenceDate { get; }
-
         /// <summary>
         /// Get ValuesNow for existing DynPropList
         /// </summary>
@@ -289,11 +287,12 @@ namespace CommonDynPropManager
             object Mavaleur;
 
             // Get list of static properties
-            PropertyInfo[] MyProps = this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+            // REMOVED FLAGS : PropertyInfo[] MyProps = this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo[] MyProps = this.GetType().GetProperties();
 
             for (int i = 0; i < MyProps.Length; i++)
             {
-                if (!MyProps[i].PropertyType.FullName.Contains("ICollection"))// Only if not a collection
+                if (MyProps[i].Name.ToLower() != "item" && !MyProps[i].PropertyType.FullName.Contains("ICollection"))// Only if not a collection
                 {
                     if (!MyProps[i].PropertyType.FullName.Contains("ECollection"))// if standard type
                     {
@@ -315,10 +314,16 @@ namespace CommonDynPropManager
                                 else
                                 {
 
-                                    Mavaleur = ((DateTime)Mavaleur).ToString("dd/MM/yyyy HH:mm:ss");
+                                    Mavaleur = ((DateTime)Mavaleur).ToString("dd/MM/yyyy");
                                 }
                             }
-                            Resultat.Add(MyProps[i].Name.ToLower(), Mavaleur);
+                            if (Resultat.Keys.Contains(MyProps[i].Name.ToLower()))
+                            {
+                                if (Resultat[MyProps[i].Name.ToLower()] == null)
+                                    Resultat[MyProps[i].Name.ToLower()] = Mavaleur;
+                            }
+                            else
+                                Resultat.Add(MyProps[i].Name.ToLower(), Mavaleur);
                         }
 
                     }
@@ -334,10 +339,7 @@ namespace CommonDynPropManager
                         else
                         {
                             this.AddDTOInList(MyProps[i].Name, Resultat);
-
                         }
-
-
                     }
 
                 }
@@ -345,11 +347,6 @@ namespace CommonDynPropManager
             return Resultat;
 
         }
-
-
-
-
-
 
         /// <summary>
         /// Gives an empty dictionnaray constaining one entry for each dynamic property associated to the ObjType of current objet
@@ -399,7 +396,6 @@ namespace CommonDynPropManager
                                 {
                                     try
                                     {
-
                                         MyParsedData = DateTime.ParseExact(MyData[DataKey].ToString().Replace(" ", " "), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                                     }
                                     catch
@@ -478,9 +474,8 @@ namespace CommonDynPropManager
             foreach (IGenType_DynProp typeDynProp in MyLinkedDynProp)
             {
                 var valeur = this[typeDynProp.DynProp.Name];
-                if (valeur.GetType().Name.Substring(0, 4).ToLower() == "list")
+                if (valeur != null && valeur.GetType().Name.Substring(0, 4).ToLower() == "list")
                 {
-                    //valeur =
                     valeur = JsonConvert.SerializeObject(valeur);
                 }
                 string sourceId = typeDynProp.LinkSourceID;
@@ -505,46 +500,63 @@ namespace CommonDynPropManager
                     sourceIdValeur = this[sourceId.Substring(3)];
                 }
                 
+
                 string requete;
                 if (allowedTables.Contains(typeDynProp.LinkedTable, StringComparer.CurrentCultureIgnoreCase))
                 {
                     if (valeur != null && !String.IsNullOrEmpty(valeur.ToString()))
                     {
-                        if (typeDynProp.LinkedField.Substring(0, 5) == "@Dyn:")
+                        if (typeDynProp.LinkedField.Length >= 5 && typeDynProp.LinkedField.Substring(0, 5) == "@Dyn:")
                         {
                             // Pour l'instant gestion des dest string uniquement
 
-                            requete = "select ValueString from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
-                            requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
-                            DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[4] { "@id", sourceIdValeur, "@StartDate", this.OccurenceDate });
+                            requete = "select ValueString from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable +
+                                "DynProps P ON V." + typeDynProp.LinkedTable + "DynProp_ID = P.ID ";
+                            requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id ";
+                            requete += "AND P.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
+                            DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[2] { "@id", sourceIdValeur});
                             if (Retour.Rows.Count >= 1)
                             { // Il existe une valeur à la même date
                                 if (Retour.Rows[0][0].ToString() == valeur.ToString())
                                 {
-                                    // Même date, même valeur, on ne fait rien
+                                    // même valeur, on ne fait rien
                                 }
                                 else
                                 {
-                                    requete = "UPDATE V SET ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "' " ;
-                                    requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id and V.StartDate=@StartDate";
-                                    object[] Params = new object[6] { "@val", valeur, "@id", sourceIdValeur, "@StartDate", this.OccurenceDate };
+                                    requete = "UPDATE V SET StartDate = GETDATE(), ValueString=@val from " + typeDynProp.LinkedTable + "DynPropValues V JOIN " + typeDynProp.LinkedTable +
+                                        "DynProps P ON V." + typeDynProp.LinkedTable + "DynProp_ID = P.ID ";
+                                    requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id ";
+                                    requete += "AND P.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                    object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                     MyConn.ExecuteQueryWithArgs(requete, Params);
 
                                 }
                             }
                             else
                             {
+                                /* OLD, MAYBE BAD ? 
+                                requete = "INSERT INTO " + typeDynProp.LinkedTable + "DynPropValues  ( GETDATE(),[ValueString]," + typeDynProp.LinkedTable + "_ID";
+                                requete += "," + typeDynProp.LinkedTable + "DynProp_ID)";
+                                requete += " select @val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
+                                */
+
                                 requete = "INSERT INTO " + typeDynProp.LinkedTable + "DynPropValues  ( StartDate,[ValueString]," + typeDynProp.LinkedTable + "_ID";
                                 requete += "," + typeDynProp.LinkedTable + "DynProp_ID)";
-                                requete += " select @StartDate,@val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                requete += " select GETDATE(),@val,S.ID,p.ID from " + typeDynProp.LinkedTable + "s S JOIN " + typeDynProp.LinkedTable + "DynProps P ON p.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
+                                if (typeDynProp.LinkedField.Substring(5).ToLower() == "container")
+                                {
+                                    Console.WriteLine("yo !");
+                                }
                                 requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
-                                object[] Params = new object[6] { "@val", valeur, "@id", sourceIdValeur, "@StartDate", this.OccurenceDate };
+                                object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                 MyConn.ExecuteQueryWithArgs(requete, Params);
                             }
                         }
                         else
                         {
-                            requete = "UPDATE " + typeDynProp.LinkedTable + " SET " + typeDynProp.LinkedField + " = @val where " + typeDynProp.LinkedID + " = @id";
+                            // TODO : TMP, UGLY, SHOULD FIND A WAY THROUGH THE CONF
+                            requete = "UPDATE " + typeDynProp.LinkedTable + (typeDynProp.LinkedTable == "Sample" ? "s" : "" ) + " SET " + typeDynProp.LinkedField + " = @val where " + typeDynProp.LinkedID + " = @id";
                             //LogManager.ZeLogger.SendNotice(LogDomaine.WebApplication, requete);
                             //LogManager.ZeLogger.SendNotice(LogDomaine.WebApplication, ObjContext.Database.Connection.ConnectionString);
                             object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur };
