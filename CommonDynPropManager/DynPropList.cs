@@ -61,6 +61,8 @@ namespace CommonDynPropManager
                     return MyValue.ValueFloat;
                 case "string":
                     return MyValue.ValueString;
+                case "thesaurus":
+                    return MyValue.ValueThesaurus;
                 case "list":
                     try
                     {
@@ -90,6 +92,7 @@ namespace CommonDynPropManager
             MaDynProp.ValueDate = null;
             MaDynProp.ValueFloat = null;
             MaDynProp.ValueString = null;
+            MaDynProp.ValueThesaurus = null;
             if (MaValeur == null) return;
 
 
@@ -110,6 +113,9 @@ namespace CommonDynPropManager
                 case "string":
 
                     MaDynProp.ValueString = MaValeur.ToString();
+                    break;
+                case "thesaurus":
+                    MaDynProp.ValueThesaurus = MaValeur.ToString();
                     break;
                 case "list":
                     // TODO enlver les caractères en trop
