@@ -344,8 +344,8 @@ namespace CommonDynPropManager
 
                 }
             }
-            return Resultat;
 
+            return Resultat;
         }
 
         /// <summary>
