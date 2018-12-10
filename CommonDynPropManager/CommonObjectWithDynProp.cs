@@ -275,37 +275,51 @@ namespace CommonDynPropManager
 
         #endregion
 
-
         /// <summary>
         /// Get a dictionary including static and dynamic values 
         /// </summary>
         /// <returns></returns>
         public virtual Dictionary<string, object> GetDTO(bool IsFromList = false)
         {
-            // Get dynamic values
-            Dictionary<string, object> Resultat = this.GetProperties(true);
-            object Mavaleur;
-
-            // Get list of static properties
-            // REMOVED FLAGS : PropertyInfo[] MyProps = this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
-            PropertyInfo[] MyProps = this.GetType().GetProperties();
-
-            for (int i = 0; i < MyProps.Length; i++)
+            Dictionary<string, object> Resultat = new Dictionary<string, object>();
+            
+            foreach (var val in this.GetDTOForProperties())
             {
-                if (MyProps[i].Name.ToLower() != "item" && !MyProps[i].PropertyType.FullName.Contains("ICollection"))// Only if not a collection
+                if (!Resultat.Keys.Contains(val.Key))
+                    Resultat.Add(val.Key, val.Value);
+            }
+
+            return Resultat;
+        }
+
+        public virtual Dictionary<string, object> GetDTOForProperties(Dictionary<string, object> toret = null, PropertyInfo[] Props = null)
+        {
+            bool defaultCase = false;
+            if (toret == null && Props == null)
+                defaultCase = true;
+
+            if (toret == null)
+                toret = this.GetProperties(true);
+            if (Props == null)
+                Props = this.GetType().GetProperties();
+
+            object Mavaleur;
+            for (int i = 0; i < Props.Length; i++)
+            {
+                if (Props[i].Name.ToLower() != "item" && !Props[i].PropertyType.FullName.Contains("ICollection"))// Only if not a collection
                 {
-                    if (!MyProps[i].PropertyType.FullName.Contains("ECollection"))// if standard type
+                    if (!Props[i].PropertyType.FullName.Contains("ECollection"))// if standard type
                     {
-                        if (MyProps[i].Name.ToLower() == "status")
+                        if (Props[i].Name.ToLower() == "status")
                         {// If status get the status nd statusName
-                            Mavaleur = ObjContext.Entry(this).Property(MyProps[i].Name).CurrentValue;
-                            Resultat.Add("status", (Status)Mavaleur);
-                            Resultat.Add("statusname", StatusManager.GetStatusName((Status)Mavaleur, "EN"));
+                            Mavaleur = ObjContext.Entry(this).Property(Props[i].Name).CurrentValue;
+                            toret.Add("status", (Status)Mavaleur);
+                            toret.Add("statusname", StatusManager.GetStatusName((Status)Mavaleur, "EN"));
                         }
                         else
                         {
-                            Mavaleur = ObjContext.Entry(this).Property(MyProps[i].Name).CurrentValue;
-                            if (MyProps[i].PropertyType.FullName == "System.DateTime")
+                            Mavaleur = ObjContext.Entry(this).Property(Props[i].Name).CurrentValue;
+                            if (Props[i].PropertyType.FullName == "System.DateTime")
                             {
                                 if ((DateTime)Mavaleur == DateTime.MinValue)
                                 {
@@ -317,35 +331,34 @@ namespace CommonDynPropManager
                                     Mavaleur = ((DateTime)Mavaleur).ToString("dd/MM/yyyy");
                                 }
                             }
-                            if (Resultat.Keys.Contains(MyProps[i].Name.ToLower()))
+                            if (toret.Keys.Contains(Props[i].Name.ToLower()))
                             {
-                                if (Resultat[MyProps[i].Name.ToLower()] == null)
-                                    Resultat[MyProps[i].Name.ToLower()] = Mavaleur;
+                                if (toret[Props[i].Name.ToLower()] == null)
+                                    toret[Props[i].Name.ToLower()] = Mavaleur;
                             }
                             else
-                                Resultat.Add(MyProps[i].Name.ToLower(), Mavaleur);
+                                toret.Add(Props[i].Name.ToLower(), Mavaleur);
                         }
 
                     }
                     else
                     {// If complex Type
-                        if (MyProps[i].Name == "TypeObj")
+                        if (Props[i].Name == "TypeObj" && defaultCase)
                         {
-                            Mavaleur = ((IGenType)MyProps[i].GetValue(this, null)).ID;
-                            Resultat.Add(MyProps[i].Name.ToLower(), Mavaleur);
-                            Mavaleur = ((IGenType)MyProps[i].GetValue(this, null)).Name;
-                            Resultat.Add(MyProps[i].Name.ToLower() + "name", Mavaleur);
+                            Mavaleur = ((IGenType)Props[i].GetValue(this, null)).ID;
+                            toret.Add(Props[i].Name.ToLower(), Mavaleur);
+                            Mavaleur = ((IGenType)Props[i].GetValue(this, null)).Name;
+                            toret.Add(Props[i].Name.ToLower() + "name", Mavaleur);
                         }
                         else
                         {
-                            this.AddDTOInList(MyProps[i].Name, Resultat);
+                            this.AddDTOInList(Props[i].Name, toret);
                         }
                     }
-
                 }
             }
 
-            return Resultat;
+            return (toret);
         }
 
         /// <summary>
@@ -385,10 +398,8 @@ namespace CommonDynPropManager
                     {
                         if (MyData[DataKey] != null && !string.IsNullOrEmpty(MyData[DataKey].ToString()))
                         {
-
                             try
                             {
-
                                 var CurrentValue = ObjContext.Entry(this).CurrentValues[StaticFields[i]];
                                 Type CurrentType = this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance).Where(s => s.Name.ToLower() == DataKey.ToLower()).FirstOrDefault().PropertyType;
                                 object MyParsedData;
@@ -400,6 +411,11 @@ namespace CommonDynPropManager
                                     }
                                     catch
                                     {
+                                        int n;
+                                        if (MyData[DataKey].ToString().Length == 4 && int.TryParse(MyData[DataKey].ToString(), out n))
+                                        {
+                                            MyData[DataKey] = "01/01/" + MyData[DataKey].ToString();
+                                        }
                                         MyParsedData = DateTime.ParseExact(MyData[DataKey].ToString(), "dd/MM/yyyy", CultureInfo.InvariantCulture);
                                     }
                                 }
