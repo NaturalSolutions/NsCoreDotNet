@@ -111,6 +111,10 @@ namespace CommonDynPropManager
 
                     MaDynProp.ValueString = MaValeur.ToString();
                     break;
+                case "thesaurus":
+
+                    MaDynProp.ValueThesaurus = MaValeur.ToString();
+                    break;
                 case "list":
                     // TODO enlver les caractères en trop
                     MaDynProp.ValueString = MaValeur.ToString();

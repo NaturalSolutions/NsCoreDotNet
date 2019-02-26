@@ -17,7 +17,7 @@ using System.Configuration;
 using Newtonsoft.Json;
 using System.Data;
 using CommonDynPropManager;
-using NSConfManager;
+//using NSConfManager;
 
 
 namespace CommonDynPropManager
