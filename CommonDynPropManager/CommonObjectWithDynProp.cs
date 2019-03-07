@@ -17,7 +17,7 @@ using System.Configuration;
 using Newtonsoft.Json;
 using System.Data;
 using CommonDynPropManager;
-using NSConfManager;
+//using NSConfManager;
 
 
 namespace CommonDynPropManager
@@ -119,7 +119,7 @@ namespace CommonDynPropManager
         /// <param name="DynPropName">Property Name</param>
         /// <param name="DynPropValue">The value</param>
         /// <param name="DateValeur">StartDate of the new value</param>
-        protected abstract IGenDynPropValue SetValueInDB(string DynPropName, object DynPropValue, DateTime DateValeur);
+        protected abstract IGenDynPropValue SetValueInDB(string DynPropName, object DynPropValue, DateTime DateValeur, long? DynPropId);
 
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace CommonDynPropManager
         {
 
             DateTime Now = DateTime.Now;
-            _PropDynValuesOfNow[DynPropName] = SetValueInDB(DynPropName, DynPropValue, Now);
+            _PropDynValuesOfNow[DynPropName] = SetValueInDB(DynPropName, DynPropValue, Now, null);
 
         }
 
@@ -199,7 +199,7 @@ namespace CommonDynPropManager
         /// <param name="DateValeur"></param>
         protected void SetValue(string DynPropName, object DynPropValue, DateTime DateValeur)
         {
-            SetValueInDB(DynPropName, DynPropValue, DateValeur);
+            SetValueInDB(DynPropName, DynPropValue, DateValeur, null);
         }
 
 
