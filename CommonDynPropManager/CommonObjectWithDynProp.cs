@@ -313,8 +313,11 @@ namespace CommonDynPropManager
                         if (Props[i].Name.ToLower() == "status")
                         {// If status get the status nd statusName
                             Mavaleur = ObjContext.Entry(this).Property(Props[i].Name).CurrentValue;
-                            toret.Add("status", (Status)Mavaleur);
-                            toret.Add("statusname", StatusManager.GetStatusName((Status)Mavaleur, "EN"));
+                            if (toret.Where(item => item.Key == "status").ToList().Count == 0)
+                            {
+                                toret.Add("status", (Status)Mavaleur);
+                                toret.Add("statusname", StatusManager.GetStatusName((Status)Mavaleur, "EN"));
+                            }
                         }
                         else
                         {
@@ -384,7 +387,6 @@ namespace CommonDynPropManager
         /// <param name="UpdateDynamicFields">True idf ynamic fields have to be updated</param>
         public virtual void UpdateFromDic(Dictionary<string, object> MyData, bool UpdateStaticFields = true, bool UpdateDynamicFields = true)
         {
-
             List<string> StaticFields = this.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance).Select(s => s.Name).ToList();
 
             Dictionary<string, object> DynFields = this.CurType.GetEmptyValueList();
@@ -459,19 +461,14 @@ namespace CommonDynPropManager
                             if (MyData[DataKey] == null || string.IsNullOrEmpty(MyData[DataKey].ToString()))
                             {
 
-
                             }
                             else
                             {
-
                                 if (!CompareValues(DataKey, MyData[DataKey]))
                                 {
                                     this[DataKey] = MyData[DataKey];
                                 }
-
-
                             }
-
                         }
                     }
                     else
@@ -530,7 +527,8 @@ namespace CommonDynPropManager
                                 "DynProps P ON V." + typeDynProp.LinkedTable + "DynProp_ID = P.ID ";
                             requete += "WHERE V." + typeDynProp.LinkedTable + "_ID = @id ";
                             requete += "AND P.Name ='" + typeDynProp.LinkedField.Substring(5) + "' ";
-                            DataTable Retour  = MyConn.GetDataTableFromCnxWithArgs(requete, new object[2] { "@id", sourceIdValeur});
+                            DataTable Retour = MyConn.GetDataTableFromCnxWithArgs(requete, new object[2] { "@id", sourceIdValeur });
+                            Console.WriteLine(requete);
                             if (Retour.Rows.Count >= 1)
                             { // Il existe une valeur à la même date
                                 if (Retour.Rows[0][0].ToString() == valeur.ToString())
@@ -545,7 +543,7 @@ namespace CommonDynPropManager
                                     requete += "AND P.Name ='" + typeDynProp.LinkedField.Substring(5) + "'";
                                     object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                     MyConn.ExecuteQueryWithArgs(requete, Params);
-
+                                    Console.WriteLine(requete);
                                 }
                             }
                             else
@@ -567,6 +565,7 @@ namespace CommonDynPropManager
                                 requete += " WHERE S." + typeDynProp.LinkedID + " = @id";
                                 object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur};
                                 MyConn.ExecuteQueryWithArgs(requete, Params);
+                                Console.WriteLine(requete);
                             }
                         }
                         else
@@ -578,6 +577,7 @@ namespace CommonDynPropManager
                             object[] Params = new object[4] { "@val", valeur, "@id", sourceIdValeur };
                             MyConn.ExecuteQueryWithArgs(requete, Params);
                             //SQLDirect.ExecuteSQL(requete, Params, ((SqlConnection)ObjContext.Database.Connection));
+                            Console.WriteLine(requete);
                         }
                     }
                     else
@@ -589,7 +589,6 @@ namespace CommonDynPropManager
                 {
                     throw new Exception("Wrong LinkedTable value for UpdateChampsLies(). LinkedField : " + typeDynProp.LinkedField + "; LinkedTable : " + typeDynProp.LinkedTable);
                 }
-
             }
         }
 
@@ -620,6 +619,9 @@ namespace CommonDynPropManager
             return true;
 
         }
+
+        public abstract bool SetPropValue(string propName, dynamic propValue);
+        public abstract dynamic GetPropValue(string propName, bool objectAsContext);
     }
 }
 

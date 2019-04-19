@@ -36,5 +36,8 @@ namespace CommonDynPropInterface
         /// If DynProp Type is Float, value will be recorded there
         /// </summary>
         Nullable<decimal> ValueFloat { get; set; }
+
+        dynamic getValue();
+        void setValue(dynamic value);
     }
 }

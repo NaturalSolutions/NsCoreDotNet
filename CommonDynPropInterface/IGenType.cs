@@ -5,14 +5,6 @@ using System.Text;
 
 namespace CommonDynPropInterface
 {
-
-
-
-   
-
-
-
-
     /// <summary>
     /// Represents a type of IObjectWithDynProp
     /// </summary>
@@ -38,8 +30,5 @@ namespace CommonDynPropInterface
          /// <BR></BR>null : all dynamic properties<BR></BR>true: only required properties<BR></BR>false: only NOT required properties</param>
          /// <returns></returns>
          Dictionary<string, object> GetEmptyValueList();
-
-       
-
     }
 }

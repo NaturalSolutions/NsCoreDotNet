@@ -12,11 +12,8 @@ namespace CommonDynPropInterface
     /// <typeparam name="P"> P is the Type of the object</typeparam>
     public interface IGenObjectWithDynProp<P> where P : IGenType 
     {
-        
         long ID {get;set;}
         P TypeObj { get; }
         string Name {get;set;}
-       
-        
     }
 }
