@@ -13,5 +13,9 @@ namespace CommonDynPropInterface
          long ID { get; set; }
          string Name { get; set; }
          string TypeProp { get; set; }
+
+         string ExternalInfomations { get; set; }
+
+         Boolean isRequired { get; set; }
     }
 }

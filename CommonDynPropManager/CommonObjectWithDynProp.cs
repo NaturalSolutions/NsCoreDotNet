@@ -121,6 +121,9 @@ namespace CommonDynPropManager
         /// <param name="DateValeur">StartDate of the new value</param>
         protected abstract IGenDynPropValue SetValueInDB(string DynPropName, object DynPropValue, DateTime DateValeur, long? DynPropId);
 
+        protected abstract IGenDynPropValue SetValueInDB(string DynPropName, object DynPropValue, DateTime DateValeur);
+
+
 
         /// <summary>
         /// Update a complex Data from a Value
