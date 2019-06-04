@@ -102,6 +102,11 @@ namespace CommonDynPropManager
                     MaDynProp.ValueInt = long.Parse(MaValeur.ToString());
                     break;
                 case "date":
+                    int n;
+                    if (MaValeur.ToString().Length == 4 && int.TryParse(MaValeur.ToString(), out n))
+                    {
+                        MaValeur = "01/01/" + MaValeur;
+                    }
                     MaDynProp.ValueDate = DateTime.Parse(MaValeur.ToString());
                     break;
                 case "float":

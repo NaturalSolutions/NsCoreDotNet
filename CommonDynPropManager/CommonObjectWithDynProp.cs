@@ -464,7 +464,8 @@ namespace CommonDynPropManager
                             }
                             else
                             {
-                                if (!CompareValues(DataKey, MyData[DataKey]))
+                                //TODO Temporarily removed (June2019) --- if (!CompareValues(DataKey, MyData[DataKey]))
+                                if (true)
                                 {
                                     this[DataKey] = MyData[DataKey];
                                 }
@@ -607,7 +608,8 @@ namespace CommonDynPropManager
 
             }
 
-            if (this._PropDynValuesOfNow[DataKey].DynProp.TypeProp != "list") return this[DataKey].Equals(NewValeur);
+            if (this._PropDynValuesOfNow[DataKey].DynProp.TypeProp != "list")
+                return this[DataKey].Equals(NewValeur);
             
             List<object> NewValeurList = JsonConvert.DeserializeObject<List<object>>(NewValeur.ToString());
             List<object> curValeur = (List<object>)this[DataKey];
