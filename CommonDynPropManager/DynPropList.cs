@@ -90,7 +90,8 @@ namespace CommonDynPropManager
             MaDynProp.ValueDate = null;
             MaDynProp.ValueFloat = null;
             MaDynProp.ValueString = null;
-            if (MaValeur == null) return;
+            if (MaValeur == null) 
+                return;
 
 
             switch (TypeValue.ToLower())
