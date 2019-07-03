@@ -393,6 +393,10 @@ namespace CommonDynPropManager
 
             foreach (string DataKey in MyData.Keys.Where(k => k.ToLower() != "id" && k.ToLower() != "typeobj"))
             {
+                this.SetPropValue(DataKey, MyData[DataKey]);
+                
+                /* MAYBE USELESS ? SetPropValue does the job !
+                 
                 int i = StaticFields.FindIndex(s => s.ToLower() == DataKey.ToLower());
                 if (i > -1)
                 {// if static Field, affect field
@@ -443,7 +447,6 @@ namespace CommonDynPropManager
                                     }
                                 }
                             }
-
                             catch (ArgumentException ex)
                             {
                                 // complex type
@@ -454,7 +457,7 @@ namespace CommonDynPropManager
                 }// end if static
                 else
                 {
-                    if (DynFields.ContainsKey(DataKey.ToLower()))
+                    try
                     {
                         if (UpdateDynamicFields)
                         {
@@ -464,20 +467,19 @@ namespace CommonDynPropManager
                             }
                             else
                             {
-                                //TODO Temporarily removed (June2019) --- if (!CompareValues(DataKey, MyData[DataKey]))
-                                if (true)
+                                if (!CompareValues(DataKey, MyData[DataKey]))
                                 {
                                     this[DataKey] = MyData[DataKey];
                                 }
                             }
                         }
                     }
-                    else
+                    catch
                     {
                         // nothing to do form the moment
                         //TODO ADD WARNING
                     }
-                }
+                } /**/
             }
         }
 
